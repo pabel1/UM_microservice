@@ -1,7 +1,4 @@
-export type ErrorHandler = {
-  statusCode?: number
-  message?: string
-  //   path?: string
-  //   code?: number
-  //   keyValue?: unknown
-} & Error
+export type IGenericErrorMessage = {
+  path: string | number
+  message: string
+}
