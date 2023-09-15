@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express'
+import mongoose from 'mongoose'
 import ErrorHandler from '../../Errorhandler/errorHandler'
 import handleCastError from '../../Errorhandler/handleCastError'
 import handleValidationError from '../../Errorhandler/handleValidationError'
@@ -120,6 +121,9 @@ const globalErrorHandler: ErrorRequestHandler = (
           },
         ]
       : []
+  } else if (error instanceof mongoose.Error) {
+    message = error.message
+    errorMessages = error.message ? [{ path: '', message: error.message }] : []
   }
 
   res.status(statusCode).json({
