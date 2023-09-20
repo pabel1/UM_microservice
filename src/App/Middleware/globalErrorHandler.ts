@@ -3,13 +3,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express'
 import mongoose from 'mongoose'
+import { ZodError } from 'zod'
 import ErrorHandler from '../../Errorhandler/errorHandler'
 import handleCastError from '../../Errorhandler/handleCastError'
 import handleValidationError from '../../Errorhandler/handleValidationError'
+import handleZodError from '../../Errorhandler/handleZodError'
 import config from '../../config'
 import { IGenericErrorMessage } from '../../interfaces/error'
 import { errorLogger } from '../shared/logger'
-
 const globalErrorHandler: ErrorRequestHandler = (
   error,
   req: Request,
@@ -88,14 +89,12 @@ const globalErrorHandler: ErrorRequestHandler = (
           },
         ]
       : []
-  }
-  //    else if (error instanceof ZodError) {
-  //     const simplifiedError = handleZodError(error)
-  //     statusCode = simplifiedError.statusCode
-  //     message = simplifiedError.message
-  //     errorMessages = simplifiedError.errorMessages
-  //   }
-  else if (error?.name === 'CastError') {
+  } else if (error instanceof ZodError) {
+    const simplifiedError = handleZodError(error)
+    statusCode = simplifiedError.statusCode
+    message = simplifiedError.message
+    errorMessages = simplifiedError.errorMessages
+  } else if (error?.name === 'CastError') {
     const simplifiedError = handleCastError(error)
     statusCode = simplifiedError.statusCode
     message = simplifiedError.message
