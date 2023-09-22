@@ -18,6 +18,8 @@ const academicSemesterCreate = catchAsyncError(
       message: 'Academic Semester created Successfull!!',
       data: result,
     })
+
+    next()
   },
 )
 

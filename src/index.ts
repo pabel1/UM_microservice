@@ -1,7 +1,7 @@
 import cors from 'cors'
-import express, { Application } from 'express'
+import express, { Application, NextFunction, Request, Response } from 'express'
+import httpStatus from 'http-status'
 import globalErrorHandler from './App/Middleware/globalErrorHandler'
-import { createUser } from './App/modules/user/Services/user.services'
 import router from './App/routes'
 const app: Application = express()
 
@@ -16,14 +16,19 @@ app.use('/api/v1', router)
 //global error handler
 app.use(globalErrorHandler)
 
-app.post('/', async (req, res) => {
-  try {
-    const data = await createUser(req.body)
-    console.log(data)
-    res.send('Hello World!')
-  } catch (error) {
-    console.log(error)
-  }
+// not found Route Defined
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(httpStatus.NOT_FOUND).json({
+    success: false,
+    message: ' Not Found!!',
+    errorMessage: [
+      {
+        path: req.originalUrl,
+        message: `${req.originalUrl}-This Route Not Found!!`,
+      },
+    ],
+  })
+  next()
 })
 
 export default app
