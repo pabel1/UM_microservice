@@ -1,7 +1,7 @@
 import { Model, Schema, model } from 'mongoose'
 import { IAcademicSemester } from './academicSemester.interface'
 
-//! Create a new Model type that knows about IUserMethods...
+//? Create a new Model type that knows about IUserMethods...
 type AcademicSemesterModel = Model<IAcademicSemester, object>
 
 const userSchema = new Schema<IAcademicSemester>(
@@ -12,7 +12,7 @@ const userSchema = new Schema<IAcademicSemester>(
       required: true,
     },
     year: {
-      type: Number,
+      type: String,
       required: true,
     },
     code: {
