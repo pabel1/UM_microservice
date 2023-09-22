@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
 import httpStatus from 'http-status'
 import catchAsyncError from '../../../Errorhandler/catchAsync'
+import { paginationFields } from '../../constants/pagination.constants'
 import { ConsoleLog } from '../../shared/consoleLogForDev'
+import pick from '../../shared/pick'
 import sendResponse from '../../shared/sendResponse'
 import { academicSemesterServices } from './academicSemester.services'
 
@@ -23,6 +25,26 @@ const academicSemesterCreate = catchAsyncError(
   },
 )
 
+const getAllSemester = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const paginationOptions = pick(req.query, paginationFields)
+    ConsoleLog(paginationOptions)
+
+    const result = await academicSemesterServices.getAllSemesterFromDB(
+      paginationOptions,
+    )
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Academic Semester retrieved Successfull!!',
+      data: result,
+    })
+
+    // next()
+  },
+)
+
 export const academicSemesterController = {
   academicSemesterCreate,
+  getAllSemester,
 }
