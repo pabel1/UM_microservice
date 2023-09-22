@@ -1,10 +1,12 @@
+import httpStatus from 'http-status'
 import { Model, Schema, model } from 'mongoose'
+import ErrorHandler from '../../../Errorhandler/errorHandler'
 import { IAcademicSemester } from './academicSemester.interface'
 
 //? Create a new Model type that knows about IUserMethods...
 type AcademicSemesterModel = Model<IAcademicSemester, object>
 
-const userSchema = new Schema<IAcademicSemester>(
+const academicSemesterSchema = new Schema<IAcademicSemester>(
   {
     title: {
       type: String,
@@ -32,7 +34,22 @@ const userSchema = new Schema<IAcademicSemester>(
   { timestamps: true },
 )
 
+// if already exist then some validtion added
+academicSemesterSchema.pre('save', async function (next) {
+  const isExist = await AcademicSemester.findOne({
+    title: this.title,
+    year: this.year,
+  })
+  if (isExist) {
+    throw new ErrorHandler(
+      `"${this.title}"- this semester is already created for this ${this.year}`,
+      httpStatus.CONFLICT,
+    )
+  }
+  next()
+})
+
 export const AcademicSemester = model<IAcademicSemester, AcademicSemesterModel>(
   'academic_Semester',
-  userSchema,
+  academicSemesterSchema,
 )
