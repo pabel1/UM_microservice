@@ -3,6 +3,13 @@ import { academicSemesterRouter } from '../modules/academicSemester/academicSeme
 
 const router = express.Router()
 
-router.use('/academic-semister', academicSemesterRouter)
+const allRoutes = [
+  {
+    path: '/academic-semister',
+    route: academicSemesterRouter,
+  },
+]
 
+// use all routes dynamically
+allRoutes.forEach(route => router.use(route.path, route.route))
 export default router
