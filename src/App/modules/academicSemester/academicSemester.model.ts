@@ -18,6 +18,7 @@ const userSchema = new Schema<IAcademicSemester>(
     code: {
       type: String,
       required: true,
+      enum: ['01', '02', '03'],
     },
     startMonth: {
       type: String,
