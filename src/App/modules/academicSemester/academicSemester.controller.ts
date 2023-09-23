@@ -5,6 +5,7 @@ import { paginationFields } from '../../constants/pagination.constants'
 import { ConsoleLog } from '../../shared/consoleLogForDev'
 import pick from '../../shared/pick'
 import sendResponse from '../../shared/sendResponse'
+import { IAcademicSemester } from './academicSemester.interface'
 import { academicSemesterServices } from './academicSemester.services'
 
 const academicSemesterCreate = catchAsyncError(
@@ -33,14 +34,16 @@ const getAllSemester = catchAsyncError(
     const result = await academicSemesterServices.getAllSemesterFromDB(
       paginationOptions,
     )
-    sendResponse(res, {
+
+    sendResponse<IAcademicSemester[]>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Academic Semester retrieved Successfull!!',
-      data: result,
+      meta: result.meta,
+      data: result.data,
     })
 
-    // next()
+    next()
   },
 )
 

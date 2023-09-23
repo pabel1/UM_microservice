@@ -5,3 +5,4 @@ export type IAcademicSemester = {
   startMonth: string
   endMonth: string
 }
+
