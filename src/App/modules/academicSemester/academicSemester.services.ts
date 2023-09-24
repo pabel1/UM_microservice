@@ -2,6 +2,7 @@ import httpStatus from 'http-status'
 import ErrorHandler from '../../../Errorhandler/errorHandler'
 import { IGenericResponse } from '../../../interfaces/generic.response'
 import { IPaginationOptions } from '../../../interfaces/paginationOptions'
+import { paginationHelpers } from '../../shared/paginationHelper'
 import { IAcademicSemester } from './academicSemester.interface'
 import { AcademicSemester } from './academicSemester.model'
 import { asTitleCodeConstant } from './as.constant'
@@ -19,10 +20,8 @@ const createSemesterToDB = async (
 const getAllSemesterFromDB = async (
   options: IPaginationOptions,
 ): Promise<IGenericResponse<IAcademicSemester[]>> => {
-  const page = Number(options.page)
-  const limit = Number(options.limit)
-
-  const skip = (page - 1) * limit
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(options)
 
   const result = await AcademicSemester.aggregate([
     { $skip: skip },
