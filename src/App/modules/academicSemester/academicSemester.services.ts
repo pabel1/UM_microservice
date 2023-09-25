@@ -1,7 +1,8 @@
 import httpStatus from 'http-status'
 import ErrorHandler from '../../../Errorhandler/errorHandler'
 import { IGenericResponse } from '../../../interfaces/generic.response'
-import { IPaginationOptions } from '../../../interfaces/paginationOptions'
+import { IPaginationOptions } from './../../../interfaces/paginationOptions'
+
 import { paginationHelpers } from '../../shared/paginationHelper'
 import { IAcademicSemester } from './academicSemester.interface'
 import { AcademicSemester } from './academicSemester.model'
@@ -18,15 +19,20 @@ const createSemesterToDB = async (
 }
 
 const getAllSemesterFromDB = async (
-  options: IPaginationOptions,
+  queryOptions: IPaginationOptions,
 ): Promise<IGenericResponse<IAcademicSemester[]>> => {
   const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelpers.calculatePagination(options)
+    paginationHelpers.calculatePagination(queryOptions)
 
-  const result = await AcademicSemester.aggregate([
-    { $skip: skip },
-    { $limit: limit },
-  ])
+  const pipeline = []
+  if (skip !== undefined) {
+    pipeline.push({ $skip: skip })
+  }
+
+  if (limit !== undefined) {
+    pipeline.push({ $limit: limit })
+  }
+  const result = await AcademicSemester.aggregate(pipeline)
   const total = await AcademicSemester.countDocuments()
 
   return {
