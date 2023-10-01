@@ -7,9 +7,15 @@ import { IPaginationOptions } from './../../../interfaces/paginationOptions'
 import { SortOrder } from 'mongoose'
 import { ConsoleLog } from '../../shared/consoleLogForDev'
 import { paginationHelpers } from '../../shared/paginationHelper'
-import { IAcademicSemester } from './academicSemester.interface'
+import {
+  IAcademicSemester,
+  IAcademicSemesterFilters,
+} from './academicSemester.interface'
 import { AcademicSemester } from './academicSemester.model'
-import { asTitleCodeConstant } from './as.constant'
+import {
+  academicSemesterSearchableFields,
+  asTitleCodeConstant,
+} from './as.constant'
 
 const createSemesterToDB = async (
   payload: IAcademicSemester,
@@ -23,12 +29,46 @@ const createSemesterToDB = async (
 
 const getAllSemesterFromDB = async (
   queryOptions: IPaginationOptions,
+  filters: IAcademicSemesterFilters,
 ): Promise<IGenericResponse<IAcademicSemester[]>> => {
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(queryOptions)
 
+  // Extract searchTerm to implement search query
+  const { searchTerm, ...filtersData } = filters
+
+  const andConditions = []
+  //? Search needs $or for searching in specified fields
+  if (searchTerm) {
+    // searchTerm = searchTerm?.replace(/\\/g, "");
+    andConditions.push({
+      $or: academicSemesterSearchableFields.map(field => ({
+        [field]: {
+          $regex: searchTerm,
+          $options: 'i',
+        },
+      })),
+    })
+  }
+  ConsoleLog(andConditions)
+  // ?filtering added
+  if (Object.keys(filtersData).length) {
+    andConditions.push({
+      $and: Object.entries(filtersData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    })
+  }
+
+  ConsoleLog(andConditions)
+
+  const whereConditions =
+    andConditions.length > 0 ? { $and: andConditions } : {}
+
   ConsoleLog(sortBy)
   ConsoleLog(typeof sortOrder)
+
+  // ? dynamic sorting
   const pipeline: any[] = []
   if (skip !== undefined) {
     pipeline.push({ $skip: skip })

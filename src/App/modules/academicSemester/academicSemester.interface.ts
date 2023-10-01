@@ -6,3 +6,6 @@ export type IAcademicSemester = {
   endMonth: string
 }
 
+export type IAcademicSemesterFilters = {
+  searchTerm?: string
+}
