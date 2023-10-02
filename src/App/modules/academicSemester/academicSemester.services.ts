@@ -31,6 +31,7 @@ const getAllSemesterFromDB = async (
   queryOptions: IPaginationOptions,
   filters: IAcademicSemesterFilters,
 ): Promise<IGenericResponse<IAcademicSemester[]>> => {
+  const pipeline: any[] = []
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(queryOptions)
 
@@ -41,14 +42,22 @@ const getAllSemesterFromDB = async (
   //? Search needs $or for searching in specified fields
   if (searchTerm) {
     // searchTerm = searchTerm?.replace(/\\/g, "");
+    const searchRegex = {
+      $regex: searchTerm,
+      $options: 'i',
+    }
     andConditions.push({
       $or: academicSemesterSearchableFields.map(field => ({
-        [field]: {
-          $regex: searchTerm,
-          $options: 'i',
-        },
+        [field]: searchRegex,
       })),
     })
+    andConditions.push()
+    const searchQuery = {
+      $or: academicSemesterSearchableFields.map(field => ({
+        [field]: searchRegex,
+      })),
+    }
+    console.log(searchQuery, 'searchQuery')
   }
   ConsoleLog(andConditions)
   // ?filtering added
@@ -60,7 +69,7 @@ const getAllSemesterFromDB = async (
     })
   }
 
-  ConsoleLog(andConditions)
+  ConsoleLog(andConditions[0])
 
   const whereConditions =
     andConditions.length > 0 ? { $and: andConditions } : {}
@@ -69,7 +78,7 @@ const getAllSemesterFromDB = async (
   ConsoleLog(typeof sortOrder)
 
   // ? dynamic sorting
-  const pipeline: any[] = []
+
   if (skip !== undefined) {
     pipeline.push({ $skip: skip })
   }

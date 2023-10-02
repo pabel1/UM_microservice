@@ -7,6 +7,7 @@ import pick from '../../shared/pick'
 import sendResponse from '../../shared/sendResponse'
 import { IAcademicSemester } from './academicSemester.interface'
 import { academicSemesterServices } from './academicSemester.services'
+import { academicSemesterFilterableFields } from './as.constant'
 
 const academicSemesterCreate = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -28,11 +29,13 @@ const academicSemesterCreate = catchAsyncError(
 
 const getAllSemester = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
+    const filters = pick(req.query, academicSemesterFilterableFields)
     const paginationOptions = pick(req.query, paginationFields)
     ConsoleLog(paginationOptions)
 
     const result = await academicSemesterServices.getAllSemesterFromDB(
       paginationOptions,
+      filters,
     )
 
     sendResponse<IAcademicSemester[]>(res, {
