@@ -22,3 +22,16 @@ export function createSearchQuery<T>(
     return {}
   }
 }
+
+// ! demo call this function
+// For academic semesters
+// const academicSemesterSearchableFields = ['title', 'code', 'year'];
+// const academicSearchTerm: ISearchFilters<string>['searchTerm'] = 'yourSearchTermHere';
+// const academicQuery = createSearchQuery(academicSearchTerm, academicSemesterSearchableFields);
+// console.log(academicQuery, 'searchQuery');
+
+// For users
+// const userSearchableFields = ['name', 'email', 'username'];
+// const userSearchTerm: ISearchFilters<string>['searchTerm'] = 'userSearchTermHere';
+// const userQuery = createSearchQuery(userSearchTerm, userSearchableFields);
+// console.log(userQuery, 'searchQuery');

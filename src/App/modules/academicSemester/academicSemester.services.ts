@@ -6,7 +6,9 @@ import { IPaginationOptions } from './../../../interfaces/paginationOptions'
 
 import { SortOrder } from 'mongoose'
 import { ConsoleLog } from '../../shared/consoleLogForDev'
+import { createDynamicFilter } from '../../shared/filteringHelper'
 import { paginationHelpers } from '../../shared/paginationHelper'
+import { createSearchQuery } from '../../shared/searchHelper'
 import {
   IAcademicSemester,
   IAcademicSemesterFilters,
@@ -31,49 +33,31 @@ const getAllSemesterFromDB = async (
   queryOptions: IPaginationOptions,
   filters: IAcademicSemesterFilters,
 ): Promise<IGenericResponse<IAcademicSemester[]>> => {
+  const matchAnd: any[] = []
   const pipeline: any[] = []
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(queryOptions)
 
   // Extract searchTerm to implement search query
   const { searchTerm, ...filtersData } = filters
+  console.log(filtersData)
 
-  const andConditions = []
   //? Search needs $or for searching in specified fields
-  if (searchTerm) {
-    // searchTerm = searchTerm?.replace(/\\/g, "");
-    const searchRegex = {
-      $regex: searchTerm,
-      $options: 'i',
-    }
-    andConditions.push({
-      $or: academicSemesterSearchableFields.map(field => ({
-        [field]: searchRegex,
-      })),
-    })
-    andConditions.push()
-    const searchQuery = {
-      $or: academicSemesterSearchableFields.map(field => ({
-        [field]: searchRegex,
-      })),
-    }
-    console.log(searchQuery, 'searchQuery')
+  const academicQuery = createSearchQuery(
+    searchTerm,
+    academicSemesterSearchableFields,
+  )
+  if (academicQuery) {
+    matchAnd.push(academicQuery)
   }
-  ConsoleLog(andConditions)
+  ConsoleLog(academicQuery)
   // ?filtering added
-  if (Object.keys(filtersData).length) {
-    andConditions.push({
-      $and: Object.entries(filtersData).map(([field, value]) => ({
-        [field]: value,
-      })),
-    })
+  const dynamicFilter = createDynamicFilter(filtersData)
+
+  if (dynamicFilter) {
+    matchAnd.push(dynamicFilter)
   }
-
-  ConsoleLog(andConditions[0])
-
-  const whereConditions =
-    andConditions.length > 0 ? { $and: andConditions } : {}
-
+  ConsoleLog(dynamicFilter)
   ConsoleLog(sortBy)
   ConsoleLog(typeof sortOrder)
 
@@ -98,6 +82,11 @@ const getAllSemesterFromDB = async (
     // pipeline.push({ $sort: { sortBy: sortOrder } })
   }
 
+  if (matchAnd.length) {
+    pipeline.unshift({
+      $match: { $and: matchAnd },
+    })
+  }
   console.log(pipeline)
   const result = await AcademicSemester.aggregate(pipeline)
   const total = await AcademicSemester.countDocuments()
