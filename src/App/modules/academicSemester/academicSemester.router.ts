@@ -17,7 +17,10 @@ router
 
 router
   .route('/update-academic-semester/:id')
-  .patch(academicSemesterController.updateAcademicSemester)
+  .patch(
+    validateRequest(academicSemesterValidation.updateAcademicSemesterZodSchema),
+    academicSemesterController.updateAcademicSemester,
+  )
 router
   .route('/delete-academic-semester/:id')
   .delete(academicSemesterController.deleteSemester)
