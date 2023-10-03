@@ -9,3 +9,4 @@ export type IAcademicSemester = {
 export type IAcademicSemesterFilters = {
   searchTerm?: string
 }
+
