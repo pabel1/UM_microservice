@@ -11,6 +11,7 @@ import { academicSemesterFilterableFields } from './as.constant'
 
 const academicSemesterCreate = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
+    console.log('auth services')
     const payload = req.body
     const result = await academicSemesterServices.createSemesterToDB(payload)
 

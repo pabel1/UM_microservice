@@ -11,18 +11,18 @@ router
     validateRequest(academicSemesterValidation.createAcademicSemesterZodSchema),
     academicSemesterController.academicSemesterCreate,
   )
-router
-  .route('/get-all-academic-semester')
-  .get(academicSemesterController.getAllSemester)
+// router
+//   .route('/get-all-academic-semester')
+//   .get(academicSemesterController.getAllSemester)
 
-router
-  .route('/update-academic-semester/:id')
-  .patch(
-    validateRequest(academicSemesterValidation.updateAcademicSemesterZodSchema),
-    academicSemesterController.updateAcademicSemester,
-  )
-router
-  .route('/delete-academic-semester/:id')
-  .delete(academicSemesterController.deleteSemester)
+// router
+//   .route('/update-academic-semester/:id')
+//   .patch(
+//     validateRequest(academicSemesterValidation.updateAcademicSemesterZodSchema),
+//     academicSemesterController.updateAcademicSemester,
+//   )
+// router
+//   .route('/delete-academic-semester/:id')
+//   .delete(academicSemesterController.deleteSemester)
 
 export const academicSemesterRouter = router

@@ -4,14 +4,17 @@ import ErrorHandler from '../../../../Errorhandler/errorHandler'
 import config from '../../../../config'
 import { IUser } from '../Interface/user.interface'
 import { User } from '../Model/user.model'
+import { generateStudentId } from '../utils/user.utils'
+import { IAcademicSemester } from '../../academicSemester/academicSemester.interface'
+import { AcademicSemester } from '../../academicSemester/academicSemester.model'
 
 const createStudent = async (
-  student: IStudent,
+ 
   user: IUser,
 ): Promise<IUser | null> => {
   // If password is not given,set default password
   if (!user.password) {
-    user.password = config.default_student_pass as string
+    user.password = config.defaultPass as string
   }
   // set role
   user.role = 'student'
@@ -157,7 +160,7 @@ const createAdmin = async (
 ): Promise<IUser | null> => {
   // If password is not given,set default password
   if (!user.password) {
-    user.password = config.default_admin_pass as string
+    user.password = config.defaultPass as string
   }
   // set role
   user.role = 'admin'
